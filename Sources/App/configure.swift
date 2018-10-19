@@ -17,12 +17,14 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     /// middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
-
-    try services.register(s3: S3Signer.Config(accessKey: "",
-                                          secretKey: "",
-                                          region: Region(name: Region.RegionName(rawValue: "")!,
-                                                         hostName: "",
-                                                         useTLS: false)), defaultBucket: "my-bucket")
+    // Git message:
+    let accessKey = Environment.get("AWSACCESSKEY")
+    let secretKey = Environment.get("AWSSECRETKEY")
+    let region = Region.euCentral1
+    try services.register(s3: S3Signer.Config(accessKey: accessKey!,
+                                              secretKey: secretKey!,
+                                              region: region),
+                          defaultBucket: "bucket-inuk")
     
     // Configure a SQLite database
     let sqlite = try SQLiteDatabase(storage: .memory)

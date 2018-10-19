@@ -1,5 +1,6 @@
 import Vapor
-
+import S3
+import Foundation
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
     // Basic "It works" example
@@ -7,14 +8,21 @@ public func routes(_ router: Router) throws {
         return "It works!"
     }
     
-    // Basic "Hello, world!" example
-    router.get("hello") { req in
-        return "Hello, world!"
+    let s3Routes = router.grouped("s3")
+    
+    func postS3(_ req: Request) throws -> Future<Response> {
+        return try req.content.decode(File.self).map{ file in
+            let s3 = try req.makeS3Client()
+            let string = file.data.base32EncodedString()
+            let fileName = file.filename
+            return try s3.put(string: string, destination: fileName, access: .publicRead, on: req).flatMap(to: Response.self) {_ in 
+                req.redirect(to: "")
+            }
+        }
+        
     }
-
-    // Example of configuring a controller
-    let todoController = TodoController()
-    router.get("todos", use: todoController.index)
-    router.post("todos", use: todoController.create)
-    router.delete("todos", Todo.parameter, use: todoController.delete)
+    
+    s3Routes.post("post", use: postS3)
+    
+    
 }

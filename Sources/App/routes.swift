@@ -12,7 +12,9 @@ public func routes(_ router: Router) throws {
     
     func postS3(_ req: Request) throws -> Future<Response> {
         return try req.content.decode(Filer.self).flatMap { filer in
-            let file = File.Upload(data: filer.file.data, destionation: filer.file.filename, access: .publicRead, mime: filer.file.contentType?.description)
+            let mimeType = filer.file.contentType?.description ?? MediaType.plainText.description
+            let file = File.Upload(data: filer.file.data, destination: filer.file.filename, access: .publicRead, mime: mimeType)
+
             return try req.makeS3Client().put(file: file, on: req)
                 .map(to: Response.self) {_ in
                     return req.redirect(to: "")

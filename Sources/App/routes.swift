@@ -1,6 +1,6 @@
 import Vapor
 import S3
-import Foundation
+//rimport Foundation
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
     // Basic "It works" example
@@ -12,13 +12,8 @@ public func routes(_ router: Router) throws {
     
     func postS3(_ req: Request) throws -> Future<Response> {
         return try req.content.decode(Filer.self).flatMap { filer in
-            let file = filer.file
-            //print(file.filename)
-            let s3 = try req.makeS3Client()
-            let string = file.data.base32EncodedString()
-            print(string)
-            let fileName = file.filename
-            return try s3.put(string: string, destination: fileName, access: .publicRead, on: req)
+            let file = File.Upload(data: filer.file.data, destionation: filer.file.filename, access: .publicRead, mime: filer.file.contentType?.description)
+            return try req.makeS3Client().put(file: file, on: req)
                 .map(to: Response.self) {_ in
                     return req.redirect(to: "")
             }
@@ -31,8 +26,7 @@ public func routes(_ router: Router) throws {
     
 }
 
-struct Filer: Codable
+struct Filer: Content
 {
-    let conformance: String?
     let file: Core.File
 }

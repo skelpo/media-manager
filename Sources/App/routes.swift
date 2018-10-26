@@ -23,7 +23,15 @@ public func routes(_ router: Router) throws {
         
     }
     
+    func deletes3(_ req: Request) throws -> Future<HTTPStatus> {
+        return try req.content.decode(Delete.self).flatMap { response in
+            return try req.makeS3Client().delete(file: response.file as LocationConvertible, on: req).transform(to: HTTPStatus.noContent)
+        }
+    }
+    
     s3Routes.post("post", use: postS3)
+    
+    s3Routes.delete("delete", use: deletes3)
     
     
 }
@@ -31,4 +39,8 @@ public func routes(_ router: Router) throws {
 struct Filer: Content
 {
     let file: Core.File
+}
+
+struct Delete: Content {
+    let file: String
 }

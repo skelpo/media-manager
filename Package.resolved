@@ -87,7 +87,7 @@
         "repositoryURL": "https://github.com/LiveUI/S3.git",
         "state": {
           "branch": "master",
-          "revision": "438923a6fa0a61723d9066eeecb066dbd290c3ec",
+          "revision": "1b46d40645b3e8c0caf875b2fb841f94b8636b77",
           "version": null
         }
       },
@@ -191,6 +191,15 @@
         }
       },
       {
+        "package": "VaporExt",
+        "repositoryURL": "https://github.com/vapor-community/vapor-ext.git",
+        "state": {
+          "branch": null,
+          "revision": "fb61186281382e4fea0ef21ae5fc36cbc48f45c0",
+          "version": "0.3.1"
+        }
+      },
+      {
         "package": "VaporTestTools",
         "repositoryURL": "https://github.com/LiveUI/VaporTestTools.git",
         "state": {
@@ -213,8 +222,8 @@
         "repositoryURL": "https://github.com/LiveUI/XMLCoding.git",
         "state": {
           "branch": null,
-          "revision": "65d576be8093150c5e7fe5c41df1b608ea6e2c6b",
-          "version": "0.3.0"
+          "revision": "8c760e960a5e53a5338c2871c4fcdf06b8c5ace4",
+          "version": "0.4.0"
         }
       }
     ]

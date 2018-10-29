@@ -1,6 +1,8 @@
 //import FluentSQLite
 import Vapor
 import S3
+import ServiceExt
+import B2
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
@@ -17,26 +19,30 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     /// middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
-    // Git message:
-    let accessKey = Environment.get("AWSACCESSKEY")
-    let secretKey = Environment.get("AWSSECRETKEY")
-    let region = Region.euCentral1
-    try services.register(s3: S3Signer.Config(accessKey: accessKey!,
-                                              secretKey: secretKey!,
-                                              region: region),
-                          defaultBucket: "bucket-inuk")
     
-    // Configure a SQLite database
-   // let sqlite = try SQLiteDatabase(storage: .memory)
-
-    /// Register the configured SQLite database to the database config.
-    //var databases = DatabasesConfig()
-    //databases.add(database: sqlite, as: .sqlite)
-    //services.register(databases)
-
-    /// Configure migrations
-    //var migrations = MigrationConfig()
-    //migrations.add(model: Todo.self, database: .sqlite)
-    //services.register(migrations)
+    
+    Environment.dotenv()
+    if Environment.get("CLOUDPROVIDER") == "aws" {
+        guard let accessKey: String = Environment.get("AWSACCESSKEY"), let secretKey: String = Environment.get("AWSSECRETKEY") else {
+            throw Abort(.internalServerError, reason: "AWS environment variables missing")
+        }
+        print(accessKey)
+        
+        let region = Region.euCentral1
+        try services.register(s3: S3Signer.Config(accessKey: accessKey,
+                                                  secretKey: secretKey,
+                                                  region: region),
+                              defaultBucket: "bucket-inuk")
+    }
+    else if Environment.get("CLOUDPROVIDER") == "b2" {
+        guard let applicationKey: String = Environment.get("B2APPLICATIONKEY"), let keyID: String = Environment.get("B2KEYID") else {
+            throw Abort(.internalServerError, reason: "B2 environment variables missing")
+        }
+        let B2Creds = B2Config(keyID: keyID,
+                               applicationID: applicationKey,
+                               bucketID: "c57dae5326d7b3ac66660118")
+        services.register(B2Creds)
+        services.register(B2.self)
+    }
 
 }

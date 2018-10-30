@@ -37,7 +37,7 @@ public func routes(_ router: Router) throws {
         return try req.content.decode(Filer.self).flatMap { filer in
             let file = filer.file
             
-            return try req.make(B2.self).upload(file: file, req: req).map {_ in
+            return try req.make(B2.self).upload(file: file).map {_ in
                 return req.redirect(to: "")
             }
         }

@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "media-manager",
     products: [
-        .library(name: "MediaManager", targets: ["MediaManager"])
+        .library(name: "App", targets: ["App"])
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "3.0.0"),

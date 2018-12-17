@@ -1,8 +1,5 @@
-//import FluentSQLite
 import Vapor
-import S3
 import ServiceExt
-import B2
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {

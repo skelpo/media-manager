@@ -2,7 +2,7 @@ import Storage
 import Vapor
 
 extension Services {
-    mutating func registerStorage<S>(_ service: S, slug: String) where S: Storage & ServiceType {
+    mutating func registerStorage<S>(_ service: S.Type, slug: String) where S: Storage & ServiceType {
         self.register(factory: { (container: Container)throws -> S in
             let storage = try S.makeService(for: container)
             

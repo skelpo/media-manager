@@ -24,7 +24,7 @@ final class StorageController<S>: RouteCollection where S: Storage {
     }
     
     func get(_ request: Request)throws -> Future<HTTPResponse> {
-        return try request.content.decode(FileName.self).map { $0.name }.flatMap(self.storage.fetch).map { HTTPResponse(body: $0.data) }
+        return try request.content.decode(FileName.self).map { $0.filename }.flatMap(self.storage.fetch).map { HTTPResponse(body: $0.data) }
     }
     
     func replace(_ request: Request)throws -> Future<HTTPStatus> {
@@ -32,21 +32,21 @@ final class StorageController<S>: RouteCollection where S: Storage {
     }
     
     func delete(_ request: Request)throws -> Future<HTTPStatus> {
-        return try request.content.decode(FileName.self).map { $0.name }.flatMap(self.storage.delete).transform(to: .noContent)
+        return try request.content.decode(FileName.self).map { $0.filename }.flatMap(self.storage.delete).transform(to: .noContent)
     }
 }
 
 struct FileName: Content {
-    let name: String
+    let filename: String
 }
 
 struct FileUpdate: Content {
-    let name: String
+    let filename: String
     let contents: Data
     let options: Data.WritingOptions = []
     
     static func tuple(update: FileUpdate) -> (String, Data, Data.WritingOptions) {
-        return (update.name, update.contents, update.options)
+        return (update.filename, update.contents, update.options)
     }
 }
 

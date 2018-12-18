@@ -16,6 +16,6 @@ func s3(_ services: inout Services, cache: StorageControllerCache)throws {
     let config = S3Signer.Config(accessKey: accessKey, secretKey: secretKey, region: region, securityToken: Environment.get("S3_SECURITY_TOKEN"))
     let signer = try S3Signer(config)
     
-    try services.register(S3(defaultBucket: bucket, signer: signer))
+    try services.register(S3(defaultBucket: bucket, signer: signer), as: S3StorageClient.self)
     cache.register(storage: S3Storage.self, slug: "s3")
 }

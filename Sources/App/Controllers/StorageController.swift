@@ -11,7 +11,7 @@ final class StorageController<S>: RouteCollection where S: Storage {
     }
     
     func boot(router: Router) throws {
-        let storage = router.grouped(self.id)
+        let storage = router.grouped(any, "media-manager", self.id)
         
         storage.post("upload", use: upload)
         storage.get("get", use: get)

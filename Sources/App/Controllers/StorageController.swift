@@ -42,11 +42,11 @@ struct FileName: Content {
 
 struct FileUpdate: Content {
     let filename: String
-    let contents: Data
+    let data: Data
     let options: Data.WritingOptions = []
     
     static func tuple(update: FileUpdate) -> (String, Data, Data.WritingOptions) {
-        return (update.filename, update.contents, update.options)
+        return (update.filename, update.data, update.options)
     }
 }
 

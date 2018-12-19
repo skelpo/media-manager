@@ -14,9 +14,9 @@ final class StorageController<S>: RouteCollection where S: Storage {
         let storage = router.grouped(any, "media-manager", self.id)
         
         storage.post(use: upload)
-        storage.get("get", use: get)
-        storage.put("replace", use: replace)
-        storage.delete("delete", use: delete)
+        storage.get(all, use: get)
+        storage.put(all, use: replace)
+        storage.delete(all, use: delete)
     }
     
     func upload(_ request: Request)throws -> Future<HTTPStatus> {

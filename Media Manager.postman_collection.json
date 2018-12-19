@@ -1,0 +1,178 @@
+{
+	"info": {
+		"_postman_id": "7d3e8cbe-67f9-4683-9b79-7d1884f33d30",
+		"name": "Media Manager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Upload File",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "filename",
+							"value": "markdown/text.md",
+							"type": "text"
+						},
+						{
+							"key": "data",
+							"value": "# Story\n\nOnce upon a time, long long ago...\n\nTwo boys stood by the tree. One above and one below.",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/media-manager/s3/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"media-manager",
+						"s3",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get File",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "filename",
+							"value": "markdown/text.md",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/media-manager/s3/get",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"media-manager",
+						"s3",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Replace File Data",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "filename",
+							"value": "markdown/text.md",
+							"type": "text"
+						},
+						{
+							"key": "data",
+							"value": "This is replacement text. Hurrah!",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/media-manager/s3/replace",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"media-manager",
+						"s3",
+						"replace"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete File",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "filename",
+							"value": "markdown/text.md",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/media-manager/s3/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"media-manager",
+						"s3",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

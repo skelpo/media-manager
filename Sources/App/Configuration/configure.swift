@@ -27,4 +27,12 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
+    
+    /// Register a custom `FoundationClient` instance for a different cache policy
+    services.register(Client.self) { container -> (FoundationClient) in
+        let configuration = URLSessionConfiguration.default
+        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        
+        return FoundationClient(URLSession(configuration: configuration), on: container)
+    }
 }

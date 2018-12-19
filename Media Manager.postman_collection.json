@@ -33,7 +33,7 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/v1/media-manager/s3/upload",
+					"raw": "http://localhost:8080/v1/media-manager/s3",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -42,8 +42,7 @@
 					"path": [
 						"v1",
 						"media-manager",
-						"s3",
-						"upload"
+						"s3"
 					]
 				}
 			},
@@ -75,7 +74,7 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/v1/media-manager/s3/get",
+					"raw": "http://localhost:8080/v1/media-manager/s3/markdown/text.md",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -85,7 +84,8 @@
 						"v1",
 						"media-manager",
 						"s3",
-						"get"
+						"markdown",
+						"text.md"
 					]
 				}
 			},
@@ -104,12 +104,13 @@
 					}
 				],
 				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
+					"mode": "formdata",
+					"formdata": [
 						{
 							"key": "filename",
 							"value": "markdown/text.md",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "data",
@@ -119,7 +120,7 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/v1/media-manager/s3/replace",
+					"raw": "http://localhost:8080/v1/media-manager/s3/markdown/text.md",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -129,7 +130,8 @@
 						"v1",
 						"media-manager",
 						"s3",
-						"replace"
+						"markdown",
+						"text.md"
 					]
 				}
 			},
@@ -158,7 +160,7 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/v1/media-manager/s3/delete",
+					"raw": "http://localhost:8080/v1/media-manager/s3/markdown/text.md",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -168,7 +170,8 @@
 						"v1",
 						"media-manager",
 						"s3",
-						"delete"
+						"markdown",
+						"text.md"
 					]
 				}
 			},

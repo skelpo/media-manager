@@ -24,30 +24,27 @@ final class StorageController<S>: RouteCollection where S: Storage {
     }
     
     func get(_ request: Request)throws -> Future<HTTPResponse> {
-        return try request.content.decode(FileName.self).map { $0.filename }.flatMap(self.storage.fetch).map { HTTPResponse(body: $0.data) }
+        let filename = self.filename(from: request.http)
+        return self.storage.fetch(file: filename).map { HTTPResponse(body: $0.data) }
     }
     
     func replace(_ request: Request)throws -> Future<HTTPStatus> {
-        return try request.content.decode(FileUpdate.self).map(FileUpdate.tuple).flatMap(self.storage.write).transform(to: .ok)
+        let filename = self.filename(from: request.http)
+        let data = request.content.get(Data.self, at: "data")
+        
+        return data.flatMap { contents in
+            return self.storage.write(file: filename, with: contents, options: [])
+        }.transform(to: .ok)
     }
     
     func delete(_ request: Request)throws -> Future<HTTPStatus> {
-        return try request.content.decode(FileName.self).map { $0.filename }.flatMap(self.storage.delete).transform(to: .noContent)
+        let filename = self.filename(from: request.http)
+        return self.storage.delete(file: filename).transform(to: .noContent)
     }
-}
-
-struct FileName: Content {
-    let filename: String
-}
-
-struct FileUpdate: Content {
-    let filename: String
-    let data: Data
-    let options: Data.WritingOptions = []
     
-    static func tuple(update: FileUpdate) -> (String, Data, Data.WritingOptions) {
-        return (update.filename, update.data, update.options)
+    private func filename(from request: HTTPRequest) -> String {
+        let path = request.url.path
+        let components = path.split(separator: "/").map(String.init)
+        return components.drop { $0 != self.id }.dropFirst().joined(separator: "/")
     }
 }
-
-extension Data.WritingOptions: Codable {}

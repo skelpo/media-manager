@@ -1,7 +1,7 @@
 import Storage
 import Vapor
 
-class StorageControllerCache: Service {
+final class StorageControllerCache: Service {
     private var factories: [String: (Container)throws -> RouteCollection] = [:]
     
     func register<S>(storage: S.Type, slug: String) where S: Storage & ServiceType {

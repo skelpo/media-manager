@@ -1,12 +1,12 @@
 import Storage
 import Vapor
 
-final class StorageControllerCache: Service {
+final class StorageControllerCache {
     private var factories: [String: (Container)throws -> RouteCollection] = [:]
     
-    func register<S>(storage: S.Type, slug: String) where S: Storage & ServiceType {
+    func register<S>(storage initializer: @escaping (Container)throws -> S, slug: String) where S: Storage {
         let factory = { (container: Container)throws -> StorageController<S> in
-            let storage = try storage.makeService(for: container)
+            let storage = try initializer(container)
             let controller = StorageController<S>.init(id: slug, storage: storage)
             
             return controller
@@ -15,7 +15,7 @@ final class StorageControllerCache: Service {
         self.factories[String(describing: S.self)] = factory
     }
     
-    func register(to router: Router, on container: Container)throws {
+    func register(to router: RoutesBuilder, on container: Container)throws {
         let factories = self.factories.values
         let controllers = try factories.map { factory in try factory(container) }
         

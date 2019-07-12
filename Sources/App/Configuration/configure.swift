@@ -1,38 +1,20 @@
 import Vapor
-import ServiceExt
 
 /// Called before your application initializes.
-public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
-    Environment.dotenv(filename: env.name + ".env")
-    
-    /// Register providers first
-
-    /// Storage Controllers
+public func configure(_ services: inout Services) throws {
     let cache = StorageControllerCache()
     try s3(&services, cache: cache)
     
-    services.register(cache)
-    
-    /// Register routes to the router
-    services.register(Router.self) { container -> EngineRouter in
-        let router = EngineRouter.default()
+    services.instance(cache)
+
+    services.extend(Routes.self) { router, container in
         let cache = try container.make(StorageControllerCache.self)
-        
         try cache.register(to: router, on: container)
-        
-        return router
     }
 
-    /// Register middleware
-    var middlewares = MiddlewareConfig() // Create _empty_ middleware config
-    middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
-    services.register(middlewares)
-    
-    /// Register a custom `FoundationClient` instance for a different cache policy
-    services.register(Client.self) { container -> (FoundationClient) in
-        let configuration = URLSessionConfiguration.default
-        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-        
-        return FoundationClient(URLSession(configuration: configuration), on: container)
+    services.register(MiddlewareConfiguration.self) { container in
+        var middlewares = MiddlewareConfiguration()
+        try middlewares.use(container.make(ErrorMiddleware.self))
+        return middlewares
     }
 }

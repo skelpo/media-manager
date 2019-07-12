@@ -10,39 +10,37 @@ final class StorageController<S>: RouteCollection where S: Storage {
         self.storage = storage
     }
     
-    func boot(router: Router) throws {
-        let storage = router.grouped(any, "media-manager", self.id)
+    func boot(routes: RoutesBuilder) throws {
+        let storage = routes.grouped(.anything, "media-manager", .constant(self.id))
         
         storage.post(use: upload)
-        storage.get(all, use: get)
-        storage.put(all, use: replace)
-        storage.delete(all, use: delete)
+        storage.get(.catchall, use: get)
+        storage.put(.catchall, use: replace)
+        storage.delete(.catchall, use: delete)
     }
     
-    func upload(_ request: Request)throws -> Future<HTTPStatus> {
-        return try request.content.decode(File.self).and(result: Optional<String>.none).flatMap(self.storage.store).transform(to: .ok)
+    func upload(_ request: Request)throws -> EventLoopFuture<HTTPStatus> {
+        let file = try request.content.decode(File.self)
+        return self.storage.store(file: file, at: nil).transform(to: .ok)
     }
     
-    func get(_ request: Request)throws -> Future<HTTPResponse> {
-        let filename = self.filename(from: request.http)
-        return self.storage.fetch(file: filename).map { HTTPResponse(body: $0.data) }
+    func get(_ request: Request)throws -> EventLoopFuture<Response> {
+        let filename = self.filename(from: request)
+        return self.storage.fetch(file: filename).map { Response(body: .init(data: Data($0.data.readableBytesView))) }
     }
     
-    func replace(_ request: Request)throws -> Future<HTTPStatus> {
-        let filename = self.filename(from: request.http)
-        let data = request.content.get(Data.self, at: "data")
-        
-        return data.flatMap { contents in
-            return self.storage.write(file: filename, with: contents, options: [])
-        }.transform(to: .ok)
+    func replace(_ request: Request)throws -> EventLoopFuture<HTTPStatus> {
+        let filename = self.filename(from: request)
+        let data = try request.content.get(Data.self, at: "data")
+        return self.storage.write(file: filename, with: data).transform(to: .ok)
     }
     
-    func delete(_ request: Request)throws -> Future<HTTPStatus> {
-        let filename = self.filename(from: request.http)
+    func delete(_ request: Request)throws -> EventLoopFuture<HTTPStatus> {
+        let filename = self.filename(from: request)
         return self.storage.delete(file: filename).transform(to: .noContent)
     }
     
-    private func filename(from request: HTTPRequest) -> String {
+    private func filename(from request: Request) -> String {
         let path = request.url.path
         let components = path.split(separator: "/").map(String.init)
         return components.drop { $0 != self.id }.dropFirst().joined(separator: "/")

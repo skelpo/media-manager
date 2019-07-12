@@ -2,6 +2,8 @@ import Vapor
 import S3
 
 extension S3.Error: AbortError {
+    public var description: String { self.reason }
+
     public var status: HTTPResponseStatus {
         switch self {
         case .s3NotRegistered: return .internalServerError
@@ -9,8 +11,9 @@ extension S3.Error: AbortError {
         case .missingData: return .failedDependency
         case .invalidUrl: return .badRequest
         case .badStringData: return .badRequest
-        case let .badResponse(response): return response.http.status
+        case let .badResponse(response): return response.status
         case let .errorResponse(status, _): return status
+        case let .badClientResponse(response): return HTTPResponseStatus(statusCode: Int(response.status.code))
         }
     }
     
@@ -21,8 +24,11 @@ extension S3.Error: AbortError {
         case .missingData: return "Unexpectedly got empty response body from S3 API"
         case .invalidUrl: return "Cannot convert string to URL"
         case .badStringData: return "Cannot convert specified string to byte array"
-        case let .badResponse(response): return String(data: response.http.body.data ?? Data(), encoding: .utf8) ?? ""
+        case let .badResponse(response): return String(data: response.body.data ?? Data(), encoding: .utf8) ?? ""
         case let .errorResponse(_, message): return "[" + message.code + "] " + message.message
+        case let .badClientResponse(response):
+            let data = response.body.map { Data($0.readableBytesView) } ?? Data()
+            return String(data: data, encoding: .utf8) ?? ""
         }
     }
     
@@ -35,6 +41,7 @@ extension S3.Error: AbortError {
         case .badStringData: return "badStringData"
         case .badResponse: return "badResponse"
         case .errorResponse: return "errorResponse"
+        case .badClientResponse: return "badAPIResponse"
         }
     }
 }

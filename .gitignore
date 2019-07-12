@@ -5,3 +5,4 @@ xcuserdata
 DerivedData/
 .DS_Store
 s3.sh
+.swiftpm/
